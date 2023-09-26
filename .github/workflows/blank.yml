@@ -22,7 +22,7 @@ jobs:
         id: checkov
         run: |
           checkov -d ./Compute-Engine || echo "Checkov found errors"
-        continue-on-error: true
+        continue-on-error: false
 
   apply:
     needs: checkov
