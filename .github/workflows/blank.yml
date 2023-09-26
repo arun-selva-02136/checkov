@@ -21,13 +21,17 @@ jobs:
       - name: Run Checkov
         id: checkov
         run: |
-          checkov -d ./Compute-Engine || echo "Checkov found errors"
-        continue-on-error: false
+          checkov -d ./Compute-Engine
+        continue-on-error: true
+
+      - name: Set Checkov output
+        id: set-output
+        run: echo "checkov_result=$(if [[ -z \$(cat checkov_output.json) ]]; then echo 'success'; else echo 'failure'; fi)" 
 
   apply:
     needs: checkov
     runs-on: ubuntu-latest
-    if: ${{ needs.checkov.outputs.checkov != 'Checkov found errors' }}
+    if: ${{ needs.checkov.outputs.checkov_result == 'success' }}
 
     steps:
       - name: Checkout code
@@ -39,5 +43,5 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Terraform Plan
+      - name: Terraform plan
         run: terraform plan
