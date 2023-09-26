@@ -27,7 +27,7 @@ jobs:
   apply:
     needs: checkov
     runs-on: ubuntu-latest
-    if: ${{ !always() && success() }}  # Only run if the 'checkov' job succeeded
+    if: ${{ needs.checkov.outputs.checkov != 'Checkov found errors' }}
 
     steps:
       - name: Checkout code
@@ -39,6 +39,5 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Terraform Apply
+      - name: Terraform Plan
         run: terraform plan
-
